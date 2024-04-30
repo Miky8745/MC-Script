@@ -1,0 +1,8 @@
+{
+  "block.mcscript.cpu_block": "CPU",
+
+  "item.mcscript.program": "Program",
+  "item.mcscript.source_code": "Source Code Loader",
+
+  "creativetab.mcscript_tab": "MC Script"
+}
