@@ -1,7 +1,8 @@
 package net.euport.mcscript.block.entity;
 
-import net.euport.mcscript.custom.RAM;
+import net.euport.mcscript.custom.OutputHandler;
 import net.euport.mcscript.custom.Utils;
+import net.euport.mcscript.custom.ram.RAM;
 import net.euport.mcscript.item.ModItems;
 import net.euport.mcscript.screen.CPUBlockMenu;
 import net.minecraft.core.BlockPos;
@@ -29,15 +30,15 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static net.euport.mcscript.custom.Utils.handleOutput;
+import java.io.File;
+
+import static net.euport.mcscript.custom.Utils.MEMORY_STATE_URI;
 import static net.euport.mcscript.custom.Utils.print;
 
 public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
-
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
-
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     protected final ContainerData data;
@@ -45,6 +46,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     private int maxProgress = 78;
     private static int power = 0;
     private static int tickCounter = 0;
+    public static boolean loaded = false;
     public static RAM ram = new RAM(16);
 
     public CPUBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -87,6 +89,13 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
+        ram = RAM.loadState(new File(Utils.MEMORY_STATE_URI), ram.size);
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        RAM.saveState(ram, new File(MEMORY_STATE_URI));
     }
 
     @Override
@@ -130,6 +139,11 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
+        if (!loaded) {
+            ram = RAM.loadState(new File(MEMORY_STATE_URI), ram.size);
+            loaded = true;
+        }
+
         //print(String.valueOf(getPower(pLevel.getBlockState(pPos), pLevel, pPos)));
         tickCounter++;
         pLevel.updateNeighborsAt(pPos, pState.getBlock());
@@ -163,7 +177,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
                     String[] params = {String.valueOf(in)};
                     String[] generatedOutput = Utils.runProgram(params);
                     //print(generatedOutput[0]);
-                    handleOutput(generatedOutput);
+                    OutputHandler.handleOutput(generatedOutput);
+                    //print("index 0: " + ram.read(0).get().toString());
                 }
             } catch (Exception e) {
                 print(e.getMessage());
@@ -224,8 +239,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     public static int getOutput(@NotNull BlockGetter level, BlockPos pos) {
         BlockState blockState = level.getBlockState(pos);
         if (blockState.hasBlockEntity()) {
-            if (level.getBlockEntity(pos) instanceof CPUBlockEntity CPUBlockEntity) {
-                if(CPUBlockEntity.level != null) {
+            if (level.getBlockEntity(pos) instanceof CPUBlockEntity CPUBlockEntityInstance) {
+                if(CPUBlockEntityInstance.level != null) {
                     return power;
                 }
             }

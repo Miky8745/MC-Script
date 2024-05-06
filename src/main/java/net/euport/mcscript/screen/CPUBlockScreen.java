@@ -1,7 +1,7 @@
 package net.euport.mcscript.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.euport.mcscript.TutorialMod;
+import net.euport.mcscript.MCScript;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class CPUBlockScreen extends AbstractContainerScreen<CPUBlockMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(TutorialMod.MOD_ID, "textures/gui/cpu_block_gui.png");
+            new ResourceLocation(MCScript.MOD_ID, "textures/gui/cpu_block_gui.png");
 
     public CPUBlockScreen(CPUBlockMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

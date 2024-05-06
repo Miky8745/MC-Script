@@ -1,6 +1,6 @@
 package net.euport.mcscript.block;
 
-import net.euport.mcscript.TutorialMod;
+import net.euport.mcscript.MCScript;
 import net.euport.mcscript.block.custom.CPUBlock;
 import net.euport.mcscript.item.ModItems;
 import net.minecraft.world.item.BlockItem;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
-            DeferredRegister.create(ForgeRegistries.BLOCKS, TutorialMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.BLOCKS, MCScript.MOD_ID);
 
     public static final RegistryObject<Block> CPU_BLOCK = registerBlock("cpu_block",
             () -> new CPUBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));

@@ -1,6 +1,6 @@
 package net.euport.mcscript.screen;
 
-import net.euport.mcscript.TutorialMod;
+import net.euport.mcscript.MCScript;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModMenuTypes {
     public static final DeferredRegister<MenuType<?>> MENUS =
-            DeferredRegister.create(ForgeRegistries.MENU_TYPES, TutorialMod.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.MENU_TYPES, MCScript.MOD_ID);
 
     public static final RegistryObject<MenuType<CPUBlockMenu>> CPU_BLOCK_MENU =
             registerMenuType("cpu_block_menu", CPUBlockMenu::new);

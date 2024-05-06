@@ -1,6 +1,6 @@
 package net.euport.mcscript.datagen;
 
-import net.euport.mcscript.TutorialMod;
+import net.euport.mcscript.MCScript;
 import net.euport.mcscript.block.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 public class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, TutorialMod.MOD_ID, exFileHelper);
+        super(output, MCScript.MOD_ID, exFileHelper);
     }
 
     @Override

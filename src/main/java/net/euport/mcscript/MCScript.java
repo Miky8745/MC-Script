@@ -22,12 +22,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(TutorialMod.MOD_ID)
-public class TutorialMod {
+@Mod(MCScript.MOD_ID)
+public class MCScript {
     public static final String MOD_ID = "mcscript";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TutorialMod() {
+    public MCScript() {
         Init.init();
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 

@@ -1,6 +1,6 @@
 package net.euport.mcscript.item;
 
-import net.euport.mcscript.TutorialMod;
+import net.euport.mcscript.MCScript;
 import net.euport.mcscript.block.ModBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModCreativeModTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TutorialMod.MOD_ID);
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MCScript.MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> TUTORIAL_TAB = CREATIVE_MODE_TABS.register("mcscript_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.PROGRAM.get()))
