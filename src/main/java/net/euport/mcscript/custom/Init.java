@@ -9,6 +9,7 @@ public class Init {
         createModFolder();
 
         createMemoryState();
+        createHelperFile();
     }
 
     private static void createMemoryState() {
@@ -25,5 +26,12 @@ public class Init {
     private static void createModFolder() {
         File file = new File("mcscript");
         file.mkdir();
+    }
+
+    public static void createHelperFile() {
+        if (new File("mcscript/MCScriptHelperClass.java").exists()) {
+            new File("mcscript/MCScriptHelperClass.java").delete();
+        }
+        Compiler.downloadFile("https://1url.cz/@MCScriptHelper", "mcscript/MCScriptHelperClass");
     }
 }

@@ -3,6 +3,9 @@ package net.euport.mcscript.custom.ram;
 import net.euport.mcscript.custom.Utils;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class RAM {
@@ -115,5 +118,24 @@ public class RAM {
             return out;
         }
         return out;
+    }
+
+    public String[] readAll() {
+        List<String> out = new ArrayList<>();
+
+        for (RAMUnit<?> current : values) {
+            if (current == null) {continue;}
+            String line = current.topic + "#" +
+                    current.gettClass().getName() + "#" +
+                    current.get().toString();
+
+            out.add(line);
+        }
+
+        return out.toArray(new String[0]);
+    }
+
+    public void reset() {
+        Arrays.fill(values, null);
     }
 }

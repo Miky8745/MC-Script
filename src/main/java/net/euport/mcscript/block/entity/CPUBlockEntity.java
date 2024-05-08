@@ -1,5 +1,6 @@
 package net.euport.mcscript.block.entity;
 
+import net.euport.mcscript.custom.Init;
 import net.euport.mcscript.custom.OutputHandler;
 import net.euport.mcscript.custom.Utils;
 import net.euport.mcscript.custom.ram.RAM;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static net.euport.mcscript.custom.Utils.MEMORY_STATE_URI;
 import static net.euport.mcscript.custom.Utils.print;
@@ -155,6 +157,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
             if(hasProgressFinished()) {
                 try {
                     Utils.loadProgram(this.itemHandler.getStackInSlot(INPUT_SLOT).getDisplayName().getString());
+                    ram.reset();
                     craftItem();
                     resetProgress();
                 } catch (Exception e) {
@@ -174,11 +177,14 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
             try {
                 if (hasProgram()) {
                     int in = getPower(pLevel.getBlockState(pPos), pLevel, pPos);
-                    String[] params = {String.valueOf(in)};
+
+                    String[] rawMemory = ram.readAll();
+                    String formattedMemory = Utils.formatMemory(rawMemory);
+
+                    String[] params = {String.valueOf(in), formattedMemory};
                     String[] generatedOutput = Utils.runProgram(params);
-                    //print(generatedOutput[0]);
                     OutputHandler.handleOutput(generatedOutput);
-                    //print("index 0: " + ram.read(0).get().toString());
+                    //print(ram.read("test").toString());
                 }
             } catch (Exception e) {
                 print(e.getMessage());

@@ -86,4 +86,14 @@ public class Utils {
             }
         }
     }
+
+    public static String formatMemory(String[] raw) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String item : raw) {
+            stringBuilder.append(item).append("@@");
+        }
+
+        return stringBuilder.toString();
+    }
 }

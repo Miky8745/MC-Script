@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Compiler {
-    private static final int MIN_PARAMS = 1;
 
     public static void downloadFile(String url, String name) {
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
@@ -39,7 +39,7 @@ public class Compiler {
     }
 
     public static void compileJava(String fileName) throws Exception {
-        Process runtime = Runtime.getRuntime().exec(Utils.generateCommandLineCommand(fileName, "javac") + ".java");
+        Process runtime = Runtime.getRuntime().exec(Utils.generateCommandLineCommand(fileName, "javac") + ".java" + " MCScriptHelperClass.java");
         Scanner sc = new Scanner(runtime.getErrorStream(), StandardCharsets.UTF_8);
         StringBuilder out = new StringBuilder();
         while (sc.hasNext()) {
@@ -54,13 +54,23 @@ public class Compiler {
     public static String[] runJavaCode(String fileName, @Nullable String[] params) throws Exception {
         Process runtime = Runtime.getRuntime().exec(Utils.generateCommandLineCommand(fileName, "java") + " " + catParams(params));
         Scanner sc = new Scanner(runtime.getInputStream(), StandardCharsets.UTF_8);
-        //Utils.print("cmd /c java " + fileName + catParams(params));
+        Scanner errSc = new Scanner(runtime.getErrorStream(), StandardCharsets.UTF_8);
         List<String> out = new ArrayList<>();
         while (sc.hasNext()) {
             out.add(sc.nextLine());
         }
         sc.close();
-        //Utils.print(fileName);
+
+        StringBuilder builder= new StringBuilder();
+        while (errSc.hasNext()) {
+            builder.append(errSc.nextLine());
+        }
+        errSc.close();
+
+        if (!(builder.isEmpty())) {
+            throw new RuntimeException("Error while running java code: " + builder);
+        }
+
         return out.toArray(new String[0]);
     }
 
@@ -74,23 +84,19 @@ public class Compiler {
         compiledJava.delete();
     }
 
-    @Nullable
-    private static String catParams(@Nullable String[] params) {
-        if (params == null || params.length < MIN_PARAMS) {
+    private static String catParams(String[] params) {
+        if (params == null) {
             return null;
         }
 
         StringBuilder builder = new StringBuilder();
         builder.append(' ');
 
-        int signalStrength;
-        try {
-            signalStrength = Integer.parseInt(params[0]);
-        } catch (Exception e) {
-            return null;
-        }
+        int signalStrength = Integer.parseInt(params[0]);
 
-        builder.append(signalStrength);
+        String memoryState = params[1];
+
+        builder.append(signalStrength).append(' ').append(memoryState);
 
         return builder.toString();
     }
