@@ -1,6 +1,5 @@
 package net.euport.mcscript.block.entity;
 
-import net.euport.mcscript.custom.Init;
 import net.euport.mcscript.custom.OutputHandler;
 import net.euport.mcscript.custom.Utils;
 import net.euport.mcscript.custom.ram.RAM;
@@ -32,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Arrays;
 
 import static net.euport.mcscript.custom.Utils.MEMORY_STATE_URI;
 import static net.euport.mcscript.custom.Utils.print;
@@ -92,12 +90,6 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
         ram = RAM.loadState(new File(Utils.MEMORY_STATE_URI), ram.size);
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
-        RAM.saveState(ram, new File(MEMORY_STATE_URI));
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class RAM {
     public final int size;
@@ -125,14 +124,27 @@ public class RAM {
 
         for (RAMUnit<?> current : values) {
             if (current == null) {continue;}
-            String line = current.topic + "#" +
+            String line = parseValue(current.topic) + "#" +
                     current.gettClass().getName() + "#" +
-                    current.get().toString();
+                    parseValue(current.get().toString());
 
             out.add(line);
         }
 
         return out.toArray(new String[0]);
+    }
+
+    public static String parseValue(String value) {
+        String[] parts = value.split(" ");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            builder.append(part);
+            if (i < parts.length-1) {
+                builder.append("***");
+            }
+        }
+        return builder.toString();
     }
 
     public void reset() {

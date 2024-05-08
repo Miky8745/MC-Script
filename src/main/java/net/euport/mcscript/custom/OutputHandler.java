@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static net.euport.mcscript.custom.Utils.*;
 
@@ -20,7 +19,7 @@ public class OutputHandler {
         for (String s : rawOutput) {
             if (s == null) {return;}
             if (s.isBlank()) {continue;}
-
+            s = toNormal(s);
             String[] split = s.split("&");
             if (split[0].equals("syscall")) {
                 split = split[1].split("#");
@@ -29,7 +28,6 @@ public class OutputHandler {
                     handleSystemCalls(split[0], args);
                 }
             } else {
-                s = toNormal(s);
                 print(s);
             }
         }
@@ -74,7 +72,7 @@ public class OutputHandler {
         if (rawClassName == null) {throw new IllegalArgumentException(next[0] + " is not a valid datatype.");}
 
         String data= next[1];
-        String topic = next[2];
+        String topic = next[2].strip();
         if ((data) == null || (topic) == null) {throw new IllegalArgumentException("Data or topic is null.");}
 
         CPUBlockEntity.ram.writeToFirstEmpty(getRAMUnitFromString(rawClassName, data, topic));
