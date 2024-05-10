@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static net.euport.mcscript.custom.Utils.*;
 
 public class OutputHandler {
-    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear"};
+    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn"};
 
     public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
@@ -49,6 +49,7 @@ public class OutputHandler {
             case 1 -> write(next);
             case 2 -> delete(next);
             case 3 -> clear();
+            case 4 -> turnOn();
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -93,6 +94,10 @@ public class OutputHandler {
 
     private static void clear() {
         CPUBlockEntity.ram.reset();
+    }
+
+    private static void turnOn() {
+        CPUBlockEntity.setPowered(true);
     }
 
     private static String toNormal(String text) {

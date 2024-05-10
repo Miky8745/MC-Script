@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -48,6 +49,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     private static int tickCounter = 0;
     public static boolean loaded = false;
     public static RAM ram = new RAM(16);
+    private static boolean on = false;
+    private static int maxPower = 15;
 
     public CPUBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CPU_BLOCK_BE.get(), pPos, pBlockState);
@@ -138,6 +141,12 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
             loaded = true;
         }
 
+        if (on) {
+            power = maxPower;
+        } else {
+            power = 0;
+        }
+
         //print(String.valueOf(getPower(pLevel.getBlockState(pPos), pLevel, pPos)));
         tickCounter++;
         pLevel.updateNeighborsAt(pPos, pState.getBlock());
@@ -161,7 +170,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         if (tickCounter == 19) {
-            power = 0;
+            on = false;
         }
 
         else if(tickCounter > 20) {
@@ -244,5 +253,13 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
         return 0;
+    }
+
+    public static void setPower(int pPower) {
+        maxPower = Mth.clamp(pPower, 0, 15);
+    }
+
+    public static void setPowered(boolean powered) {
+        on = powered;
     }
 }
