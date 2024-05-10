@@ -37,7 +37,7 @@ public class Compiler {
         return file.renameTo(newName);
     }
 
-    public static void compileJava(String fileName) throws Exception {
+    public static void compileJava(String fileName) throws IOException {
         Process runtime = Runtime.getRuntime().exec(Utils.generateCommandLineCommand(fileName, "javac") + ".java" + " MCScriptHelperClass.java");
         Scanner sc = new Scanner(runtime.getErrorStream(), StandardCharsets.UTF_8);
         StringBuilder out = new StringBuilder();

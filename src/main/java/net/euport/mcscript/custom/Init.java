@@ -1,6 +1,7 @@
 package net.euport.mcscript.custom;
 
 import java.io.File;
+import java.io.IOException;
 
 import static net.euport.mcscript.custom.Utils.print;
 
@@ -33,5 +34,10 @@ public class Init {
             new File("mcscript/MCScriptHelperClass.java").delete();
         }
         Compiler.downloadFile("https://1url.cz/@MCScriptHelper", "mcscript/MCScriptHelperClass");
+        try {
+            Compiler.compileJava("mcscript/MCScriptHelperClass");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to compile MCScriptHelperClass.java with error code: " + e.getMessage());
+        }
     }
 }

@@ -65,6 +65,7 @@ public class RAM {
 
     public void clear(String topic) {
         for (int i = 0; i < size; i++) {
+            if (values[i] == null) {continue;}
             if (topic.equals(values[i].topic)) {
                 values[i] = null;
             }

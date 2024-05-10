@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static net.euport.mcscript.custom.Utils.*;
 
 public class OutputHandler {
-    private static final String[] validCommands = {"writeIndex", "write"};
+    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear"};
 
     public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
@@ -47,6 +47,8 @@ public class OutputHandler {
         switch (instruction) {
             case 0 -> writeToIndex(next);
             case 1 -> write(next);
+            case 2 -> delete(next);
+            case 3 -> clear();
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -66,7 +68,7 @@ public class OutputHandler {
     }
 
     private static void write(String[] next) {
-        if (next.length < 3) {return;}
+        if (next.length < 3) {throw new IllegalArgumentException("Too few arguments for write.");}
 
         String rawClassName = getRawClassName(next[0]);
         if (rawClassName == null) {throw new IllegalArgumentException(next[0] + " is not a valid datatype.");}
@@ -76,6 +78,21 @@ public class OutputHandler {
         if ((data) == null || (topic) == null) {throw new IllegalArgumentException("Data or topic is null.");}
 
         CPUBlockEntity.ram.writeToFirstEmpty(getRAMUnitFromString(rawClassName, data, topic));
+    }
+
+    private static void delete(String[] next) {
+        if (next.length < 2) {throw new IllegalArgumentException("Too few arguments for delete.");}
+
+        int isAddress = Integer.parseInt(next[0]);
+        if (isAddress == 1) {
+            CPUBlockEntity.ram.clear(Integer.parseInt(next[1]));
+        } else {
+            CPUBlockEntity.ram.clear(next[1]);
+        }
+    }
+
+    private static void clear() {
+        CPUBlockEntity.ram.reset();
     }
 
     private static String toNormal(String text) {
