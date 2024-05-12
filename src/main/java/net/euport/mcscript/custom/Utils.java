@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class Utils {
+public abstract class Utils {
     public static final String DOWNLOADED_CODE_URI = "mcscript/Code";
     public static final String MEMORY_STATE_URI = "mcscript/memory_state.txt";
 
@@ -67,7 +67,7 @@ public class Utils {
         }
     }
 
-    public static RAMUnit<?> getRAMUnitFromString(String tClass, String data, String topic) {
+    public static RAMUnit<?> getRAMUnitFromString(String tClass, String data, String topic, int index) {
         switch (tClass) {
             case "java.lang.Integer" -> {
                 Integer object = Integer.parseInt(data);

@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import static net.euport.mcscript.custom.Utils.print;
 
-public class Init {
+public abstract class Init {
     public static void init() {
         createModFolder();
 

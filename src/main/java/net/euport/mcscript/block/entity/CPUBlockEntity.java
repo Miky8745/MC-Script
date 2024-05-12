@@ -48,7 +48,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     private static int power = 0;
     private static int tickCounter = 0;
     public static boolean loaded = false;
-    public static RAM ram = new RAM(16);
+    public static final int RAM_SIZE = 16;
+    public static RAM ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
     private static boolean on = false;
     private static int maxPower = 15;
 
@@ -92,7 +93,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        ram = RAM.loadState(new File(Utils.MEMORY_STATE_URI), ram.size);
+        ram = RAM.loadFromJSON(new File(Utils.MEMORY_STATE_URI), RAM_SIZE);
     }
 
     @Override
@@ -137,7 +138,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         if (!loaded) {
-            ram = RAM.loadState(new File(MEMORY_STATE_URI), ram.size);
+            ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
             loaded = true;
         }
 

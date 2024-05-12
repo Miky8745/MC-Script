@@ -1,19 +1,36 @@
 package net.euport.mcscript.custom.ram;
 
-import net.euport.mcscript.custom.Utils;
+import com.google.gson.Gson;
+import net.euport.mcscript.block.entity.CPUBlockEntity;
+import net.euport.mcscript.factories.ModifiedGsonObjectFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class RAM {
-    public final int size;
+    public int size;
     private RAMUnit<?>[] values;
 
     public RAM(int size) {
         this.size = size;
         values = new RAMUnit[size];
+    }
+
+    public void secureMemory() {
+        this.size = CPUBlockEntity.RAM_SIZE;
+        if (values == null) {values = new RAMUnit<?>[size];}
+        if (values.length != size) {
+            RAMUnit<?>[] temp = values;
+            values = new RAMUnit<?>[size];
+            for (int i = 0; i < temp.length && i < values.length; i++) {
+                values[i] = temp[i];
+            }
+        }
     }
 
     public <T> void writeToIndex(T value, Class<T> valueClass, String topic, int index) {
@@ -44,6 +61,16 @@ public class RAM {
         }
 
         throw new IllegalStateException("Out of memory");
+    }
+
+    public int getFirstEmpty(String topic) {
+        for (int i = 0; i < size; i++) {
+            if (values[i] == null || values[i].topic.equals(topic)) {
+                return i;
+            }
+        }
+
+        throw new RuntimeException("Out of memory.");
     }
 
     public Data<?> read(int index) {
@@ -89,13 +116,17 @@ public class RAM {
     public static void saveState(RAM ram, File file) {
         if (!file.exists()) {return;}
 
+        Gson gsonObject = ModifiedGsonObjectFactory.createGsonObject();
+
         try(FileWriter writer = new FileWriter(file)) {
-            writer.write(ram.getRAMStateInString());
+            String json = gsonObject.toJson(ram);
+            writer.write(json);
         } catch (IOException e) {
-            return;
+            throw new RuntimeException(e);
         }
     }
 
+    /*
     public static RAM loadState(File file, int size) {
         RAM out = new RAM(size);
         if (!file.exists()) {return out;}
@@ -118,6 +149,22 @@ public class RAM {
             return out;
         }
         return out;
+    }
+    */
+
+    public static RAM loadFromJSON(File file, int size) {
+        if (!file.exists()) {return new RAM(size);}
+
+        Gson gson = ModifiedGsonObjectFactory.createGsonObject();
+
+        try(FileReader reader = new FileReader(file)) {
+            RAM ram = gson.fromJson(reader, RAM.class);
+            if(ram == null) {return new RAM(size);}
+            ram.secureMemory();
+            return ram;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String[] readAll() {

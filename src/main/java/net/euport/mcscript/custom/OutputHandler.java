@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 import static net.euport.mcscript.custom.Utils.*;
 
-public class OutputHandler {
-    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn"};
+public abstract class OutputHandler {
+    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength"};
 
     public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
@@ -50,6 +50,7 @@ public class OutputHandler {
             case 2 -> delete(next);
             case 3 -> clear();
             case 4 -> turnOn();
+            case 5 -> signalStrength(next);
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -65,7 +66,7 @@ public class OutputHandler {
         String topic = next[3];
         if ((data) == null || (topic) == null) {throw new IllegalArgumentException("Data or topic is null.");}
 
-        CPUBlockEntity.ram.writeToIndex(getRAMUnitFromString(rawClassName, data, topic), index);
+        CPUBlockEntity.ram.writeToIndex(getRAMUnitFromString(rawClassName, data, topic, index), index);
     }
 
     private static void write(String[] next) {
@@ -78,7 +79,7 @@ public class OutputHandler {
         String topic = next[2].strip();
         if ((data) == null || (topic) == null) {throw new IllegalArgumentException("Data or topic is null.");}
 
-        CPUBlockEntity.ram.writeToFirstEmpty(getRAMUnitFromString(rawClassName, data, topic));
+        CPUBlockEntity.ram.writeToFirstEmpty(getRAMUnitFromString(rawClassName, data, topic, CPUBlockEntity.ram.getFirstEmpty(topic)));
     }
 
     private static void delete(String[] next) {
@@ -98,6 +99,17 @@ public class OutputHandler {
 
     private static void turnOn() {
         CPUBlockEntity.setPowered(true);
+    }
+
+    private static void signalStrength(String[] next) {
+        if (next.length < 1) {throw new RuntimeException("Too few arguments for setSignalStrength");}
+
+        try {
+            int strength = Integer.parseInt(next[0]);
+            CPUBlockEntity.setPower(strength);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Argument in setSignalStrength is not an Integer");
+        }
     }
 
     private static String toNormal(String text) {
