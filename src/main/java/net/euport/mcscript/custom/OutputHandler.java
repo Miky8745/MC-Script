@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static net.euport.mcscript.custom.Utils.*;
 
 public abstract class OutputHandler {
-    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength"};
+    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength", "setExecutionInterval"};
 
     public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
@@ -51,6 +51,7 @@ public abstract class OutputHandler {
             case 3 -> clear();
             case 4 -> turnOn();
             case 5 -> signalStrength(next);
+            case 6 -> setExecutionInterval(next);
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -109,6 +110,17 @@ public abstract class OutputHandler {
             CPUBlockEntity.setPower(strength);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Argument in setSignalStrength is not an Integer");
+        }
+    }
+
+    private static void setExecutionInterval(String[] next) {
+        if (next.length < 1) {throw new RuntimeException("Too few arguments for setExecutionInterval");}
+
+        try {
+            int interval = Integer.parseInt(next[0]);
+            CPUBlockEntity.setExecutionInterval(interval);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Argument in setExecutionInterval is not an Integer");
         }
     }
 

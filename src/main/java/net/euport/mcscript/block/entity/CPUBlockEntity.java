@@ -52,7 +52,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     public static RAM ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
     private static boolean on = false;
     private static int maxPower = 15;
-
+    private static int executionInterval = 20;
     public CPUBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CPU_BLOCK_BE.get(), pPos, pBlockState);
         this.data = new ContainerData() {
@@ -169,12 +169,13 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
         } else {
             resetProgress();
         }
-
+        /*
         if (tickCounter == 19) {
             on = false;
         }
+        */
 
-        else if(tickCounter > 20) {
+        if(tickCounter >= executionInterval) {
             tickCounter = 0;
             try {
                 if (hasProgram()) {
@@ -262,5 +263,13 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void setPowered(boolean powered) {
         on = powered;
+    }
+
+    public static int getExecutionInterval() {
+        return executionInterval;
+    }
+
+    public static void setExecutionInterval(int executionInterval) {
+        CPUBlockEntity.executionInterval = executionInterval;
     }
 }
