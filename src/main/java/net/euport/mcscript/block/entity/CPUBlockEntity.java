@@ -1,5 +1,6 @@
 package net.euport.mcscript.block.entity;
 
+import net.euport.mcscript.block.entity.properties.CPUBlockEntityProperties;
 import net.euport.mcscript.custom.OutputHandler;
 import net.euport.mcscript.custom.Utils;
 import net.euport.mcscript.custom.ram.RAM;
@@ -32,11 +33,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Map;
 
 import static net.euport.mcscript.custom.Utils.MEMORY_STATE_URI;
 import static net.euport.mcscript.custom.Utils.print;
 
 public class CPUBlockEntity extends BlockEntity implements MenuProvider {
+    public static Map<String, CPUBlockEntityProperties> blocks;
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
     private final String UUID = java.util.UUID.randomUUID().toString();
     private static final int INPUT_SLOT = 0;
@@ -46,16 +49,19 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     protected final ContainerData data;
     private int progress = 0;
     private int maxProgress = 78;
-    private static int power = 0;
+    //private static int power = 0;
     private static int tickCounter = 0;
-    public static boolean loaded = false;
+    //public static boolean loaded = false;
     public static final int RAM_SIZE = 16;
     public static RAM ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
-    private static boolean on = false;
-    private static int maxPower = 15;
-    private static int executionInterval = 20;
+    //private static boolean on = false;
+    //private static int maxPower = 15;
+    //private static int executionInterval = 20;
     public CPUBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CPU_BLOCK_BE.get(), pPos, pBlockState);
+        if (!blocks.containsKey(UUID)) {
+            blocks.put(UUID, new CPUBlockEntityProperties());
+        }
         this.data = new ContainerData() {
             @Override
             public int get(int pIndex) {
@@ -138,15 +144,16 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        if (!loaded) {
+        CPUBlockEntityProperties properties = blocks.get(UUID);
+        if (!properties.loaded) {
             ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
-            loaded = true;
+            properties.loaded = true;
         }
 
-        if (on) {
-            power = maxPower;
+        if (properties.on) {
+            properties.power = properties.maxPower;
         } else {
-            power = 0;
+            properties.power = 0;
         }
 
         //print(String.valueOf(getPower(pLevel.getBlockState(pPos), pLevel, pPos)));
@@ -163,7 +170,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
                 try {
                     Utils.loadProgram(this.itemHandler.getStackInSlot(INPUT_SLOT).getDisplayName().getString());
                     craftItem();
-                    resetAfterLoad();
+                    resetAfterLoad(properties);
                 } catch (Exception e) {
                     print(e.getMessage());
                 }
@@ -177,7 +184,7 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
         }
         */
 
-        if(tickCounter >= executionInterval) {
+        if(tickCounter >= properties.executionInterval) {
             tickCounter = 0;
             try {
                 if (hasProgram()) {
@@ -188,22 +195,24 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
 
                     String[] params = {String.valueOf(in), formattedMemory};
                     String[] generatedOutput = Utils.runProgram(params);
-                    OutputHandler.handleOutput(generatedOutput);
+                    OutputHandler.handleOutput(generatedOutput, UUID);
                     //print(ram.read("test").toString());
                 } else {
-                    on = false;
+                    properties.on = false;
                 }
             } catch (Exception e) {
                 print(e.getMessage());
             }
         }
+
+        blocks.put(UUID, properties);
     }
 
-    private void resetAfterLoad() {
+    private void resetAfterLoad(CPUBlockEntityProperties properties) {
         ram.reset();
-        on = false;
-        maxPower = 15;
-        executionInterval = 20;
+        properties.on = false;
+        properties.maxPower = 15;
+        properties.executionInterval = 20;
         resetProgress();
     }
 
@@ -260,28 +269,32 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     public static int getOutput(@NotNull BlockGetter level, BlockPos pos) {
         BlockState blockState = level.getBlockState(pos);
         if (blockState.hasBlockEntity()) {
-            if (level.getBlockEntity(pos) instanceof CPUBlockEntity CPUBlockEntityInstance) {
-                if(CPUBlockEntityInstance.level != null) {
-                    return power;
+            if (level.getBlockEntity(pos) instanceof CPUBlockEntity cpuBlockEntityInstance) {
+                if(cpuBlockEntityInstance.level != null) {
+                    return cpuBlockEntityInstance.getPower();
                 }
             }
         }
         return 0;
     }
 
-    public static void setPower(int pPower) {
-        maxPower = Mth.clamp(pPower, 0, 15);
+    public int getPower() {
+        return blocks.get(UUID).power;
     }
 
-    public static void setPowered(boolean powered) {
-        on = powered;
+    public static void setPower(int pPower, String pUUID) {
+        blocks.get(pUUID).maxPower = Mth.clamp(pPower, 0, 15);
     }
 
-    public static int getExecutionInterval() {
-        return executionInterval;
+    public static void setPowered(boolean powered, String pUUID) {
+        blocks.get(pUUID).on = powered;
     }
 
-    public static void setExecutionInterval(int executionInterval) {
-        CPUBlockEntity.executionInterval = executionInterval;
+    public static int getExecutionInterval(String pUUID) {
+        return blocks.get(pUUID).executionInterval;
+    }
+
+    public static void setExecutionInterval(int executionInterval, String pUUID) {
+        blocks.get(pUUID).executionInterval = executionInterval;
     }
 }

@@ -11,7 +11,7 @@ import static net.euport.mcscript.custom.Utils.*;
 public abstract class OutputHandler {
     private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength", "setExecutionInterval", "turnOff"};
 
-    public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
+    public static void handleOutput(@Nullable String[] rawOutput, String UUID) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
 
         rawOutput = rawOutput[0].split("@@");
@@ -25,7 +25,7 @@ public abstract class OutputHandler {
                 split = split[1].split("#");
                 if (split.length >= 2) {
                     String[] args = Arrays.copyOfRange(split, 1, split.length);
-                    handleSystemCalls(split[0], args);
+                    handleSystemCalls(split[0], args, UUID);
                 }
             } else {
                 print(s);
@@ -33,26 +33,26 @@ public abstract class OutputHandler {
         }
     }
 
-    private static void handleSystemCalls(@NotNull String command, @Nullable String[] args) throws IllegalAccessException {
+    private static void handleSystemCalls(@NotNull String command, @Nullable String[] args, String UUID) throws IllegalAccessException {
         for (int i = 0; i < validCommands.length; i++) {
             if (validCommands[i].equals(command)) {
-                execute(i, args);
+                execute(i, args, UUID);
                 return;
             }
         }
         throw new RuntimeException(command + " is not a valid command");
     }
 
-    public static void execute(int instruction, String[] next) throws IllegalAccessException {
+    public static void execute(int instruction, String[] next, String UUID) throws IllegalAccessException {
         switch (instruction) {
             case 0 -> writeToIndex(next);
             case 1 -> write(next);
             case 2 -> delete(next);
             case 3 -> clear();
-            case 4 -> turnOn();
-            case 5 -> signalStrength(next);
-            case 6 -> setExecutionInterval(next);
-            case 7 -> turnOff();
+            case 4 -> turnOn(UUID);
+            case 5 -> signalStrength(next, UUID);
+            case 6 -> setExecutionInterval(next, UUID);
+            case 7 -> turnOff(UUID);
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -99,31 +99,31 @@ public abstract class OutputHandler {
         CPUBlockEntity.ram.reset();
     }
 
-    private static void turnOn() {
-        CPUBlockEntity.setPowered(true);
+    private static void turnOn(String UUID) {
+        CPUBlockEntity.setPowered(true, UUID);
     }
 
-    private static void turnOff() {
-        CPUBlockEntity.setPowered(false);
+    private static void turnOff(String UUID) {
+        CPUBlockEntity.setPowered(false, UUID);
     }
 
-    private static void signalStrength(String[] next) {
+    private static void signalStrength(String[] next, String UUID) {
         if (next.length < 1) {throw new RuntimeException("Too few arguments for setSignalStrength");}
 
         try {
             int strength = Integer.parseInt(next[0]);
-            CPUBlockEntity.setPower(strength);
+            CPUBlockEntity.setPower(strength, UUID);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Argument in setSignalStrength is not an Integer");
         }
     }
 
-    private static void setExecutionInterval(String[] next) {
+    private static void setExecutionInterval(String[] next, String UUID) {
         if (next.length < 1) {throw new RuntimeException("Too few arguments for setExecutionInterval");}
 
         try {
             int interval = Integer.parseInt(next[0]);
-            CPUBlockEntity.setExecutionInterval(interval);
+            CPUBlockEntity.setExecutionInterval(interval, UUID);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Argument in setExecutionInterval is not an Integer");
         }

@@ -1,12 +1,17 @@
 package net.euport.mcscript.custom;
 
+import net.euport.mcscript.block.entity.CPUBlockEntity;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import static net.euport.mcscript.custom.Utils.print;
 
 public abstract class Init {
     public static void init() {
+        CPUBlockEntity.blocks = new HashMap<>();
+
         createModFolder();
 
         createMemoryState();
