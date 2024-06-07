@@ -9,7 +9,7 @@ import java.util.Arrays;
 import static net.euport.mcscript.custom.Utils.*;
 
 public abstract class OutputHandler {
-    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength", "setExecutionInterval"};
+    private static final String[] validCommands = {"writeIndex", "write", "delete", "clear", "turnOn", "setSignalStrength", "setExecutionInterval", "turnOff"};
 
     public static void handleOutput(@Nullable String[] rawOutput) throws IllegalAccessException {
         if (rawOutput == null || rawOutput.length == 0 || rawOutput[0] == null || rawOutput[0].isBlank()) {return;}
@@ -52,6 +52,7 @@ public abstract class OutputHandler {
             case 4 -> turnOn();
             case 5 -> signalStrength(next);
             case 6 -> setExecutionInterval(next);
+            case 7 -> turnOff();
             default -> throw new IllegalAccessException(instruction + " is not a valid instruction code.");
         }
     }
@@ -100,6 +101,10 @@ public abstract class OutputHandler {
 
     private static void turnOn() {
         CPUBlockEntity.setPowered(true);
+    }
+
+    private static void turnOff() {
+        CPUBlockEntity.setPowered(false);
     }
 
     private static void signalStrength(String[] next) {

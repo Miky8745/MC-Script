@@ -38,6 +38,7 @@ import static net.euport.mcscript.custom.Utils.print;
 
 public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
+    private final String UUID = java.util.UUID.randomUUID().toString();
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -152,6 +153,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
         tickCounter++;
         pLevel.updateNeighborsAt(pPos, pState.getBlock());
 
+        //print(UUID);
+
         if(hasRecipe()) {
             increaseCraftingProgress();
             setChanged(pLevel, pPos, pState);
@@ -159,9 +162,8 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
             if(hasProgressFinished()) {
                 try {
                     Utils.loadProgram(this.itemHandler.getStackInSlot(INPUT_SLOT).getDisplayName().getString());
-                    ram.reset();
                     craftItem();
-                    resetProgress();
+                    resetAfterLoad();
                 } catch (Exception e) {
                     print(e.getMessage());
                 }
@@ -188,11 +190,21 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
                     String[] generatedOutput = Utils.runProgram(params);
                     OutputHandler.handleOutput(generatedOutput);
                     //print(ram.read("test").toString());
+                } else {
+                    on = false;
                 }
             } catch (Exception e) {
                 print(e.getMessage());
             }
         }
+    }
+
+    private void resetAfterLoad() {
+        ram.reset();
+        on = false;
+        maxPower = 15;
+        executionInterval = 20;
+        resetProgress();
     }
 
     private void resetProgress() {
