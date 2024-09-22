@@ -126,32 +126,6 @@ public class RAM {
         }
     }
 
-    /*
-    public static RAM loadState(File file, int size) {
-        RAM out = new RAM(size);
-        if (!file.exists()) {return out;}
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("#");
-                if (parts.length < 4) {continue;}
-                int index = Integer.parseInt(parts[0]);
-                String topic = parts[1];
-                String className = parts[2];
-                String value = parts[3];
-
-                RAMUnit<?> temp = Utils.getRAMUnitFromString(className, value, topic);
-                if (temp != null) {
-                    out.values[index] = temp;
-                }
-            }
-        } catch (IOException e) {
-            return out;
-        }
-        return out;
-    }
-    */
-
     public static RAM loadFromJSON(File file, int size) {
         if (!file.exists()) {return new RAM(size);}
 

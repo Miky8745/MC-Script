@@ -49,14 +49,9 @@ public class CPUBlockEntity extends BlockEntity implements MenuProvider {
     protected final ContainerData data;
     private int progress = 0;
     private int maxProgress = 78;
-    //private static int power = 0;
     private static int tickCounter = 0;
-    //public static boolean loaded = false;
     public static final int RAM_SIZE = 16;
     public static RAM ram = RAM.loadFromJSON(new File(MEMORY_STATE_URI), RAM_SIZE);
-    //private static boolean on = false;
-    //private static int maxPower = 15;
-    //private static int executionInterval = 20;
     public CPUBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.CPU_BLOCK_BE.get(), pPos, pBlockState);
         if (!blocks.containsKey(UUID)) {
